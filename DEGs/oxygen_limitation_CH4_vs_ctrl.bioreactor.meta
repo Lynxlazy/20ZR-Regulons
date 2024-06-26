@@ -1,0 +1,12 @@
+sample	condition
+o2_12_19_br1_1	control
+o2_12_19_br1_2	control
+o2_12_19_br1	control
+o2_12_19_br3_1	control
+o2_12_19_br3_2	control
+o2_12_19_br3	control
+no_o2_12_21_br3_2	O2_lim
+no_o2_12_21_br3_1	O2_lim
+no_o2_12_21_br3	O2_lim
+no_o2_12_22_br3	O2_lim
+no_o2_12_22_br3_1	O2_lim
