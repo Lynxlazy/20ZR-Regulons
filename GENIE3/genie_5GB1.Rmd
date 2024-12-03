@@ -1,0 +1,91 @@
+---
+title: "genie"
+output: html_document
+date: "2023-10-23"
+---
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+library(GENIE3)
+library(doParallel)
+library(doRNG)
+library(tissuesGeneExpression)
+library(dplyr)
+library(vegan)
+library(ggplot2)
+library(gridExtra)
+library(ape)
+library(dendextend)
+library(pvclust)
+library(tibble)
+library(igraph)
+library(graph)
+```
+
+
+```{r}
+exprMatr <- read.table('Methylomicrobium_buryatense_5GB1C_count.csv',header = TRUE)
+head(exprMatr)
+
+
+
+```
+```{r}
+set.seed(123) # For reproducibility of results
+weightMat <- GENIE3(as.matrix(exprMatr),nCores=4, verbose=TRUE)
+```
+
+```{r}
+write.table(weightMat, "weightMat_5GB1.tsv", sep="\t")
+```
+
+```{r}
+linkList <- getLinkList(weightMat)
+head(linkList)
+```
+
+```{r}
+write.table(linkList, '5GB1_linkList.tsv', sep='\t')
+linkListTop5 <- head(linkList, n = 5000)
+write.table(linkList, '5GB1_linkList_5K.tsv', sep='\t')
+```
+
+
+```{r}
+linkListTop5 <- head(linkList, n = 5000)
+wd <- weightMat[unique(c(linkListTop5$regulatoryGene,linkListTop5$targetGene)),unique(c(linkListTop5$regulatoryGene,linkListTop5$targetGene))]
+d <- dist(wd)
+```
+
+
+```{r}
+#WARD.D2 clustering
+hc_w2 <-hclust(d, method = "ward.D2")
+ph_w2 <- as.phylo(hc_w2)
+#plot(ph_w2, type = "phylogram")
+#axisPhylo()
+```
+
+
+```{r}
+pl <- plot(hc_w2)
+x <- rect.hclust(hc_w2 , k = 30, border = 1:20)
+```
+```{r}
+df1 = data.frame(matrix(ncol = 2))
+for (i in 1:30)
+{
+  for (j in names(x[[i]]))
+  {
+    df1 <- rbind(df1,c(i, j))
+  }
+}
+
+write.table(df1, '5GB1C_5K_30clusters.tsv', sep = '\t', row.names = FALSE, quote = FALSE)
+
+```
+
+
+
+
